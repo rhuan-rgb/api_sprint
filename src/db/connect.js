@@ -2,10 +2,10 @@ const mysql = require('mysql2');
 
 const pool = mysql.createPool({
   connectionLimit: 10,
-  host: 'db', // IP ou localhost
-  user: 'root', // alunods
-  password: '?', // 
-  database: 'test'
+  host: '10.89.240.96', // IP ou localhost
+  user: 'alunods', // alunods
+  password: 'senai@604', // 
+  database: 'agenda_sala_senai'
 });
 
 module.exports = pool;
