@@ -1,4 +1,5 @@
 const connect = require("../db/connect");
+const scheduleServices = require("../services/cleanUpSchedulesService")
 
 // Verificar se o horário de início de um agendamento está dentro de um intervalo de tempo
 function isInTimeRange(timeStart, timeRange) {
@@ -14,39 +15,15 @@ module.exports = class scheduleController {
     const { dateStart, dateEnd, days, user, classroom, timeStart, timeEnd } =
       req.body;
     console.log(req.body);
-    // Verificar se todos os campos estão preenchidos
-    if (
-      !dateStart ||
-      !dateEnd ||
-      !days ||
-      !user ||
-      !classroom ||
-      !timeStart ||
-      !timeEnd
-    ) {
-      return res
-        .status(400)
-        .json({ error: "Todos os campos devem ser preenchidos" });
+    
+    const scheduleError = await scheduleServices(req.body);
+    if (scheduleError){
+      return res.status(400).json(scheduleError);
     }
 
     // Converter o array days em uma string separada por vírgulas
     const daysString = days.map((day) => `${day}`).join(", ");
     console.log(daysString);
-
-    // Verificar se o tempo está dentro do intervalo permitido
-    const isWithinTimeRange = (time) => {
-      const [hours, minutes] = time.split(":").map(Number);
-      const totalMinutes = hours * 60 + minutes;
-      return totalMinutes >= 7.5 * 60 && totalMinutes <= 23 * 60;
-    };
-
-    // Verificar se o tempo de início e término está dentro do intervalo permitido
-    if (!isWithinTimeRange(timeStart) || !isWithinTimeRange(timeEnd)) {
-      return res.status(400).json({
-        error:
-          "A sala de aula só pode ser reservada dentro do intervalo de 7:30 às 23:00",
-      });
-    }
 
     try {
       const overlapQuery = `

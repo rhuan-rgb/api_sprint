@@ -4,11 +4,7 @@ module.exports = class classroomController {
     const { number, description, capacity } = req.body;
 
     // Verifica se todos os campos estão preenchidos
-    if (!number || !description || !capacity) {
-      return res
-        .status(400)
-        .json({ error: "Todos os campos devem ser preenchidos" });
-    }
+    
 
     // Caso todos os campos estejam preenchidos, realiza a inserção na tabela
     const query = `INSERT INTO classroom (number, description, capacity) VALUES ( 
