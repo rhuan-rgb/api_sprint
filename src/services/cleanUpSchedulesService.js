@@ -1,41 +1,51 @@
-//const connect = require("../db/connect");
+const connect = require("../db/connect");
 
-async function cleanUpSchedules({dateStart,
-    dateEnd ,
-    days ,
-    user ,
-    classroom ,
-    timeStart ,
-    timeEnd}) {
-    // Verificar se todos os campos estão preenchidos
-    if (
-        !dateStart ||
-        !dateEnd ||
-        !days ||
-        !user ||
-        !classroom ||
-        !timeStart ||
-        !timeEnd
-      ) {
-        return { error: "Todos os campos devem ser preenchidos" };
-      }
-  
-      
-  
-      // Verificar se o tempo está dentro do intervalo permitido
-      const isWithinTimeRange = (time) => {
-        const [hours, minutes] = time.split(":").map(Number);
-        const totalMinutes = hours * 60 + minutes;
-        return totalMinutes >= 7.5 * 60 && totalMinutes <= 23 * 60;
-      };
-  
-      // Verificar se o tempo de início e término está dentro do intervalo permitido
-      if (!isWithinTimeRange(timeStart) || !isWithinTimeRange(timeEnd)) {
-        return {
-          error:
-            "A sala de aula só pode ser reservada dentro do intervalo de 7:30 às 23:00",
+
+
+
+module.exports = async function scheduleObjectTreatment(query) {
+  try {
+    return new Promise((resolve, reject) => {
+      connect.query(query, function (err, results) {
+        if (err) {
+          console.error(err);
+          reject({ error: "Erro interno do servidor" });
+          return;
+        }
+
+        // Objeto para armazenar os agendamentos organizados por dia da semana
+        const schedulesByDay = {
+          Seg: [],
+          Ter: [],
+          Qua: [],
+          Qui: [],
+          Sex: [],
+          Sab: [],
         };
-      }
-}
 
-module.exports = cleanUpSchedules;
+        // Organiza os agendamentos pelos dias da semana
+        results.forEach((schedule) => {
+          const days = schedule.days.split(", ");
+          days.forEach((day) => {
+            schedulesByDay[day].push(schedule);
+          });
+        });
+
+        // Ordena os agendamentos dentro de cada lista com base no timeStart
+        Object.keys(schedulesByDay).forEach((day) => {
+          schedulesByDay[day].sort((a, b) => {
+            const timeStartA = new Date(`1970-01-01T${a.timeStart}`);
+            const timeStartB = new Date(`1970-01-01T${b.timeStart}`);
+            return timeStartA - timeStartB;
+          });
+        });
+
+        // Retorna os agendamentos organizados por dia da semana e ordenados por timeStart
+        resolve(schedulesByDay);
+      });
+    });
+  } catch (error) {
+    console.error("Erro ao executar a consulta:", error);
+    return { error: "Erro interno do servidor" };
+  }
+}

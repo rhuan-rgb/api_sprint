@@ -1,5 +1,6 @@
 const connect = require("../db/connect");
-const scheduleServices = require("../services/cleanUpSchedulesService")
+// const scheduleServices = require("../services/cleanUpSchedulesService")
+const scheduleObjectTreatment = require("../services/cleanUpSchedulesService");
 
 // Verificar se o horário de início de um agendamento está dentro de um intervalo de tempo
 function isInTimeRange(timeStart, timeRange) {
@@ -16,9 +17,34 @@ module.exports = class scheduleController {
       req.body;
     console.log(req.body);
     
-    const scheduleError = await scheduleServices(req.body);
-    if (scheduleError){
-      return res.status(400).json(scheduleError);
+    // Verificar se todos os campos estão preenchidos
+    if (
+      !dateStart ||
+      !dateEnd ||
+      !days ||
+      !user ||
+      !classroom ||
+      !timeStart ||
+      !timeEnd
+    ) {
+      return { error: "Todos os campos devem ser preenchidos" };
+    }
+
+    
+
+    // Verificar se o tempo está dentro do intervalo permitido
+    const isWithinTimeRange = (time) => {
+      const [hours, minutes] = time.split(":").map(Number);
+      const totalMinutes = hours * 60 + minutes;
+      return totalMinutes >= 7.5 * 60 && totalMinutes <= 23 * 60;
+    };
+
+    // Verificar se o tempo de início e término está dentro do intervalo permitido
+    if (!isWithinTimeRange(timeStart) || !isWithinTimeRange(timeEnd)) {
+      return {
+        error:
+          "A sala de aula só pode ser reservada dentro do intervalo de 7:30 às 23:00",
+      };
     }
 
     // Converter o array days em uma string separada por vírgulas
@@ -207,105 +233,35 @@ module.exports = class scheduleController {
     const classroomID = req.params.id;
 
     // Consulta SQL para obter todos os agendamentos para uma determinada sala de aula
-    const query = `
-  SELECT schedule.*, user.name AS userName
-  FROM schedule
-  JOIN user ON schedule.user = user.cpf
-  WHERE classroom = '${classroomID}'
-`;
-
-    try {
-      connect.query(query, function (err, results) {
-        if (err) {
-          console.error(err);
-          return res.status(500).json({ error: "Erro interno do servidor" });
-        }
-
-        // Objeto para armazenar os agendamentos organizados por dia da semana
-        const schedulesByDay = {
-          Seg: [],
-          Ter: [],
-          Qua: [],
-          Qui: [],
-          Sex: [],
-          Sab: [],
-        };
-
-        // Organiza os agendamentos pelos dias da semana
-        results.forEach((schedule) => {
-          const days = schedule.days.split(", ");
-          days.forEach((day) => {
-            schedulesByDay[day].push(schedule);
-          });
-        });
-
-        // Ordena os agendamentos dentro de cada lista com base no timeStart
-        Object.keys(schedulesByDay).forEach((day) => {
-          schedulesByDay[day].sort((a, b) => {
-            const timeStartA = new Date(`1970-01-01T${a.timeStart}`);
-            const timeStartB = new Date(`1970-01-01T${b.timeStart}`);
-            return timeStartA - timeStartB;
-          });
-        });
-
-        // Retorna os agendamentos organizados por dia da semana e ordenados por timeStart
-        return res.status(200).json({ schedulesByDay });
-      });
-    } catch (error) {
-      console.error("Erro ao executar a consulta:", error);
-      return res.status(500).json({ error: "Erro interno do servidor" });
+        const query = `
+      SELECT schedule.*, user.name AS userName
+      FROM schedule
+      JOIN user ON schedule.user = user.cpf
+      WHERE classroom = '${classroomID}'
+    `;
+    const queryResult = await scheduleObjectTreatment(query);
+    if (typeof(queryResult) == "object"){
+      res.status(200).json({queryResult});
+    } else {
+      res.status(500).json(queryResult);
     }
+    
   }
 
   static async getAllSchedules(req, res) {
-    try {
       // Consulta SQL para obter todos os agendamentos
       const query = `
       SELECT schedule.*, user.name AS userName
       FROM schedule
       JOIN user ON schedule.user = user.cpf
     `;
-
-      connect.query(query, function (err, results) {
-        if (err) {
-          console.error(err);
-          return res.status(500).json({ error: "Erro interno do servidor" });
-        }
-
-        // Objeto para armazenar os agendamentos organizados por dia da semana
-        const schedulesByDay = {
-          Seg: [],
-          Ter: [],
-          Qua: [],
-          Qui: [],
-          Sex: [],
-          Sab: [],
-        };
-
-        // Organiza os agendamentos pelos dias da semana
-        results.forEach((schedule) => {
-          const days = schedule.days.split(", ");
-          days.forEach((day) => {
-            schedulesByDay[day].push(schedule);
-          });
-        });
-
-        // Ordena os agendamentos dentro de cada lista com base no timeStart
-        Object.keys(schedulesByDay).forEach((day) => {
-          schedulesByDay[day].sort((a, b) => {
-            const timeStartA = new Date(`1970-01-01T${a.timeStart}`);
-            const timeStartB = new Date(`1970-01-01T${b.timeStart}`);
-            return timeStartA - timeStartB;
-          });
-        });
-
-        // Retorna os agendamentos organizados por dia da semana e ordenados por timeStart
-        return res.status(200).json({ schedulesByDay });
-      });
-    } catch (error) {
-      console.error("Erro ao executar a consulta:", error);
-      return res.status(500).json({ error: "Erro interno do servidor" });
+    const queryResult = await scheduleObjectTreatment(query);
+    if (typeof(queryResult) == "object"){
+      res.status(200).json({queryResult});
+    } else {
+      res.status(500).json(queryResult);
     }
+      
   }
 
   static async deleteSchedule(req, res) {
