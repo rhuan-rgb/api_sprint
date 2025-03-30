@@ -18,10 +18,12 @@ module.exports = class classroomController {
 
     try {
       connect.query(query, function (err) {
-        if (err) {
+        if (err && err.code == 'ER_DUP_ENTRY') {
+          console.log(err);
+          return res.status(500).json({ error: "Erro: já existe uma sala com este número" });
+        } else if(err) {
           console.log(err);
           return res.status(500).json({ error: "Erro ao cadastrar sala" });
-
         }
         console.log("Sala cadastrada com sucesso");
         res.status(201).json({ message: "Sala cadastrada com sucesso" });

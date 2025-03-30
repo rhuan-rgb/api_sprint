@@ -1,1 +1,0 @@
-euller disse que na schedule, as validações que mais se repetem são nos "get". A razão por trás da criação de 'services' é o possível conflito entre commits quando duas ou mais pessoas fazem manutenções no mesmo arquivo, além de reutilizar código, evitando repetições. Portanto, não há necessidade de criar services para um código que não se repete. 
