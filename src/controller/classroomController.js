@@ -1,11 +1,14 @@
 const connect = require("../db/connect");
+const classroomServices = require("../services/classroomServices");
 module.exports = class classroomController {
   static async createClassroom(req, res) {
     const { number, description, capacity } = req.body;
 
     // Verifica se todos os campos estão preenchidos
-    
-
+    const typeError = classroomServices.isClassroomFieldsFilled(number, description, capacity);
+    if (typeError) {
+      return res.status(400).json(typeError);
+    }
     // Caso todos os campos estejam preenchidos, realiza a inserção na tabela
     const query = `INSERT INTO classroom (number, description, capacity) VALUES ( 
         '${number}', 
@@ -17,8 +20,8 @@ module.exports = class classroomController {
       connect.query(query, function (err) {
         if (err) {
           console.log(err);
-          res.status(500).json({ error: "Erro ao cadastrar sala" });
-          return;
+          return res.status(500).json({ error: "Erro ao cadastrar sala" });
+
         }
         console.log("Sala cadastrada com sucesso");
         res.status(201).json({ message: "Sala cadastrada com sucesso" });
@@ -50,74 +53,73 @@ module.exports = class classroomController {
     const classroomId = req.params.number;
 
     try {
-      const query = `SELECT * FROM classroom WHERE number = '${classroomId}'`;
-      connect.query(query, function (err, result) {
-        if (err) {
-          console.error("Erro ao obter sala:", err);
-          return res.status(500).json({ error: "Erro interno do servidor" });
-        }
 
-        if (result.length === 0) {
-          return res.status(404).json({ error: "Sala não encontrada" });
-        }
-
-        console.log("Sala obtida com sucesso");
-        res.status(200).json({
-          message: "Obtendo a sala com ID: " + classroomId,
-          classroom: result[0],
-        });
+      const queryResult = await classroomServices.findClass(classroomId);
+      console.log("Sala obtida com sucesso");
+      res.status(200).json({
+        message: "Obtendo a sala com ID: " + classroomId,
+        classroom: queryResult[0],
       });
-    } catch (error) {
-      console.error("Erro ao executar a consulta:", error);
-      res.status(500).json({ error: "Erro interno do servidor" });
+    }
+    catch (error) {
+      if (error.error) {
+        res.status(404).json({ error: error.error })
+        console.error("Erro ao executar a consulta:", error);
+      } else {
+        res.status(500).json({ error: error.internal_error });
+        console.error("Erro ao executar a consulta:", error);
+      }
+
     }
   }
+
 
   static async updateClassroom(req, res) {
     const { number, description, capacity } = req.body;
 
     // Validar campos obrigatórios
-    if (!number || !description || !capacity) {
-      return res
-        .status(400)
-        .json({ error: "Todos os campos devem ser preenchidos" });
+    const typeError = await classroomServices.isClassroomFieldsFilled(number, description, capacity);
+    if (typeError) {
+      console.error(typeError);
+      return res.status(400).json(typeError);
     }
 
     try {
       // Verificar se a sala existe
-      const findQuery = `SELECT * FROM classroom WHERE number = ?`;
-      connect.query(findQuery, [number], function (err, result) {
-        if (err) {
-          console.error("Erro ao buscar a sala:", err);
-          return res.status(500).json({ error: "Erro interno do servidor" });
+      try {
+        const queryResult = await classroomServices.findClass(number);
+        console.log("Sala existente");
+      } catch (error) {
+        if (error.error) {
+          console.error("Erro ao executar a consulta:", error);
+          return res.status(404).json({ error: error.error })
+        } else {
+          console.error("Erro ao executar a consulta:", error);
+          return res.status(500).json({ error: error.internal_error });
         }
+      }
 
-        if (result.length === 0) {
-          return res.status(404).json({ error: "Sala não encontrada" });
-        }
-
-        // Atualizar a sala
-        const updateQuery = `
+      // Atualizar a sala
+      const updateQuery = `
               UPDATE classroom 
               SET description = ?, capacity = ?
               WHERE number = ?
           `;
-        connect.query(
-          updateQuery,
-          [description, capacity, number],
-          function (err) {
-            if (err) {
-              console.error("Erro ao atualizar a sala:", err);
-              return res
-                .status(500)
-                .json({ error: "Erro interno do servidor" });
-            }
-
-            console.log("Sala atualizada com sucesso");
-            res.status(200).json({ message: "Sala atualizada com sucesso" });
+      connect.query(
+        updateQuery,
+        [description, capacity, number],
+        function (err) {
+          if (err) {
+            console.error("Erro ao atualizar a sala:", err);
+            return res
+              .status(500)
+              .json({ error: "Erro interno do servidor" });
           }
-        );
-      });
+
+          console.log("Sala atualizada com sucesso");
+          return res.status(200).json({ message: "Sala atualizada com sucesso" });
+        }
+      );
     } catch (error) {
       console.error("Erro ao executar a consulta:", error);
       res.status(500).json({ error: "Erro interno do servidor" });

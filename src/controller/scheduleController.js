@@ -15,8 +15,8 @@ module.exports = class scheduleController {
   static async createSchedule(req, res) {
     const { dateStart, dateEnd, days, user, classroom, timeStart, timeEnd } =
       req.body;
-    console.log(req.body);
-    
+
+
     // Verificar se todos os campos estão preenchidos
     if (
       !dateStart ||
@@ -27,10 +27,10 @@ module.exports = class scheduleController {
       !timeStart ||
       !timeEnd
     ) {
-      return { error: "Todos os campos devem ser preenchidos" };
+      return res.status(400).json({ error: "Todos os campos devem ser preenchidos" });
     }
+    console.log(req.body);
 
-    
 
     // Verificar se o tempo está dentro do intervalo permitido
     const isWithinTimeRange = (time) => {
@@ -41,10 +41,10 @@ module.exports = class scheduleController {
 
     // Verificar se o tempo de início e término está dentro do intervalo permitido
     if (!isWithinTimeRange(timeStart) || !isWithinTimeRange(timeEnd)) {
-      return {
+      return res.status(400).json({
         error:
           "A sala de aula só pode ser reservada dentro do intervalo de 7:30 às 23:00",
-      };
+      });
     }
 
     // Converter o array days em uma string separada por vírgulas
@@ -124,7 +124,7 @@ module.exports = class scheduleController {
   static async getSchedulesByIdClassroomRanges(req, res) {
     const classroomID = req.params.id;
     const { weekStart, weekEnd } = req.query; // Variavel para armazenar a semana selecionada
-    console.log(weekStart+' '+weekEnd)
+    console.log(weekStart + ' ' + weekEnd)
     // Consulta SQL para obter todos os agendamentos para uma determinada sala de aula
     const query = `
     SELECT schedule.*, user.name AS userName
@@ -233,35 +233,35 @@ module.exports = class scheduleController {
     const classroomID = req.params.id;
 
     // Consulta SQL para obter todos os agendamentos para uma determinada sala de aula
-        const query = `
+    const query = `
       SELECT schedule.*, user.name AS userName
       FROM schedule
       JOIN user ON schedule.user = user.cpf
       WHERE classroom = '${classroomID}'
     `;
     const queryResult = await scheduleObjectTreatment(query);
-    if (typeof(queryResult) == "object"){
-      res.status(200).json({queryResult});
+    if (typeof (queryResult) == "object") {
+      res.status(200).json({ queryResult });
     } else {
       res.status(500).json(queryResult);
     }
-    
+
   }
 
   static async getAllSchedules(req, res) {
-      // Consulta SQL para obter todos os agendamentos
-      const query = `
+    // Consulta SQL para obter todos os agendamentos
+    const query = `
       SELECT schedule.*, user.name AS userName
       FROM schedule
       JOIN user ON schedule.user = user.cpf
     `;
     const queryResult = await scheduleObjectTreatment(query);
-    if (typeof(queryResult) == "object"){
-      res.status(200).json({queryResult});
+    if (typeof (queryResult) == "object") {
+      res.status(200).json({ queryResult });
     } else {
       res.status(500).json(queryResult);
     }
-      
+
   }
 
   static async deleteSchedule(req, res) {
