@@ -13,5 +13,5 @@ module.exports = function userService({ cpf, email, password, name }) {
     return { error: "Email inválido. Deve conter @" };
   }
 
-  return null;
+  return false;
 };

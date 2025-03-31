@@ -1,6 +1,6 @@
 const connect = require("../db/connect");
 const userService = require("../services/userService");
-const cpfService = require("../services/userService");
+
 
 module.exports = class userController {
   static async createUser(req, res) {
@@ -12,11 +12,6 @@ module.exports = class userController {
     }
 
     try {
-      const cpfError = await cpfService(cpf);
-      if (cpfError) {
-        return res.status(400).json(cpfError);
-      }
-
       const query = `INSERT INTO user (cpf, password, email, name) VALUES ( 
           '${cpf}', 
           '${password}', 
@@ -31,7 +26,7 @@ module.exports = class userController {
             console.log(err);
             console.log("code");
             console.log(err.code);
-            return res.status(400).json({ error: "CPF já cadastrado" });
+            return res.status(400).json({ error: "CPF ou email já cadastrado" });
           } else {
             console.error(err);
             return res.status(500).json({ error: "Erro interno do servidor" });
@@ -133,10 +128,6 @@ module.exports = class userController {
     }
 
     try {
-      const cpfError = await cpfService(cpf, userId);
-      if (cpfError) {
-        return res.status(400).json(cpfError);
-      }
       const query =
         "UPDATE user SET cpf = ?, email = ?, password = ?, name = ? WHERE cpf = ?";
       connect.query(
