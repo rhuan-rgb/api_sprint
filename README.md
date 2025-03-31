@@ -1,6 +1,6 @@
 # Projeto Base - API Node.js
 
-Este repositório fornece a estrutura inicial para uma API de gerenciamento de reserva de salas de aula. Ele foi desenvolvido para servir como base para o projeto dos alunos.
+Este repositório fornece a estrutura inicial para uma API de gerenciamento de reserva de salas de aula. Foi desenvolvido para servir como base para o projeto dos alunos.
 
 ## Objetivo da Sprint
 

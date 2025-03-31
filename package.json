@@ -8,7 +8,7 @@
     "start": "node src/server.js",
     "start:dev": "nodemon src/server.js"
   },
-  "author": "Euller Ferreira",
+  "author": "Euller ferreira",
   "license": "ISC",
   "dependencies": {
     "axios": "^1.6.7",
