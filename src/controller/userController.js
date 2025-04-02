@@ -133,11 +133,6 @@ module.exports = class userController {
     }
 
     try {
-      const cpfError = await cpfService(cpf);
-      if (cpfError) {
-        return res.status(400).json(cpfError);
-      }
-
       const query =
         "UPDATE user SET cpf = ?, email = ?, password = ?, name = ? WHERE cpf = ?";
       connect.query(
