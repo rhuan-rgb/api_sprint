@@ -14,13 +14,13 @@ router.delete("/user/:id", verifyJWT, userController.deleteUser);
 
 //Classroom
 router.post("/classroom/", classroomController.createClassroom);
-router.get("/classroom/", verifyJWT, classroomController.getAllClassrooms);
+router.get("/classroom/",classroomController.getAllClassrooms);
 router.get("/classroom/:number", classroomController.getClassroomById);
 router.put("/classroom/", classroomController.updateClassroom);
 router.delete("/classroom/:number", classroomController.deleteClassroom);
 
 //Schedule
-router.post("/schedule/", verifyJWT, scheduleController.createSchedule);
+router.post("/schedule/", scheduleController.createSchedule);
 router.get("/schedule/", scheduleController.getAllSchedules);
 router.get("/schedule/:id", scheduleController.getSchedulesByIdClassroom);
 router.get(

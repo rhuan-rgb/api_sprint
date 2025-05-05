@@ -31,6 +31,14 @@ module.exports = class scheduleController {
     }
     console.log(req.body);
 
+    
+    const diasValidos = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sab"];
+
+    const diasInvalidos = days.filter(day => !diasValidos.includes(day));
+    if (diasInvalidos.length > 6) {
+      return res.status(400).json({ error: "Dias inválidos no agendamento" });
+    }
+    
 
     // Verificar se o tempo está dentro do intervalo permitido
     const isWithinTimeRange = (time) => {
