@@ -31,14 +31,15 @@ module.exports = class scheduleController {
     }
     console.log(req.body);
 
-    
+
     const diasValidos = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sab"];
 
     const diasInvalidos = days.filter(day => !diasValidos.includes(day));
-    if (diasInvalidos.length > 6) {
+
+    if (diasInvalidos.length > 0) {
       return res.status(400).json({ error: "Dias inválidos no agendamento" });
     }
-    
+
 
     // Verificar se o tempo está dentro do intervalo permitido
     const isWithinTimeRange = (time) => {
@@ -54,6 +55,24 @@ module.exports = class scheduleController {
           "A sala de aula só pode ser reservada dentro do intervalo de 7:30 às 23:00",
       });
     }
+
+    // Verificar se o tempo de duração da reserva não ultrapassa 2 horas
+    const isDurationAllowed = (start, end) => {
+      const [startHour, startMinute] = start.split(":").map(Number);
+      const [endHour, endMinute] = end.split(":").map(Number);
+      const startTotal = startHour * 60 + startMinute;
+      const endTotal = endHour * 60 + endMinute;
+      return (endTotal - startTotal) <= 120;
+    };
+
+    if (!isDurationAllowed(timeStart, timeEnd)) {
+      return res.status(400).json({
+        error: "A reserva não pode ultrapassar 2 horas de duração",
+      });
+    }
+
+
+
 
     // Converter o array days em uma string separada por vírgulas
     const daysString = days.map((day) => `${day}`).join(", ");

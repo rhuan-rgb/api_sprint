@@ -8,9 +8,9 @@ const scheduleController = require("../controller/scheduleController");
 router.post("/user/", userController.createUser);
 router.post("/user/login", userController.postLogin);
 router.get("/user/", verifyJWT, userController.getAllUsers);
-router.get("/user/:id", verifyJWT, userController.getUserById);
-router.put("/user/:id", verifyJWT, userController.updateUser);
-router.delete("/user/:id", verifyJWT, userController.deleteUser);
+router.get("/user/:id",  userController.getUserById);
+router.put("/user/:id", userController.updateUser);
+router.delete("/user/:id",  userController.deleteUser);
 
 //Classroom
 router.post("/classroom/", classroomController.createClassroom);
