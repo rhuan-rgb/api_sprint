@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const verifyJWT = require('../services/verifyJWT');
+const verifyJWT = require("../services/verifyJWT");
 const userController = require("../controller/userController");
 const classroomController = require("../controller/classroomController");
 const scheduleController = require("../controller/scheduleController");
@@ -8,13 +8,13 @@ const scheduleController = require("../controller/scheduleController");
 router.post("/user/", userController.createUser);
 router.post("/user/login", userController.postLogin);
 router.get("/user/", verifyJWT, userController.getAllUsers);
-router.get("/user/:id",  userController.getUserById);
+router.get("/user/:id", userController.getUserById);
 router.put("/user/:id", userController.updateUser);
-router.delete("/user/:id",  userController.deleteUser);
+router.delete("/user/:id", userController.deleteUser);
 
 //Classroom
 router.post("/classroom/", classroomController.createClassroom);
-router.get("/classroom/",classroomController.getAllClassrooms);
+router.get("/classroom/", classroomController.getAllClassrooms);
 router.get("/classroom/:number", classroomController.getClassroomById);
 router.put("/classroom/", classroomController.updateClassroom);
 router.delete("/classroom/:number", classroomController.deleteClassroom);
@@ -27,6 +27,7 @@ router.get(
   "/schedule/ranges/:id",
   scheduleController.getSchedulesByIdClassroomRanges
 );
+router.get("/schedule/:cpf", scheduleController.getScheduleByCpf);
 router.delete("/schedule/:id", scheduleController.deleteSchedule);
 
 module.exports = router;

@@ -291,6 +291,26 @@ module.exports = class scheduleController {
 
   }
 
+  static async getScheduleByCpf(req, res){
+    const cpf = req.params.cpf;
+    const query = `SELECT * FROM schedule WHERE user = ${cpf}`
+
+    try {
+      connect.query(query, function (err, results){
+        if (err) {
+          console.error(err);
+          return res.status(500).json({ error: "Erro interno do servidor" });
+        }
+        return res
+        .status(200)
+        .json({ message: "Agendamentos obtidos com sucesso para o usuário: ", cpf});
+      })
+    } catch (error){
+      console.error("Erro ao executar a consulta:", error);
+      return res.status(500).json({ error: "Erro interno do servidor" });
+    }
+  }
+
   static async deleteSchedule(req, res) {
     const scheduleId = req.params.id;
     const query = `DELETE FROM schedule WHERE id = ?`;
