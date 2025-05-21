@@ -27,7 +27,7 @@ router.get(
   "/schedule/ranges/:id",
   scheduleController.getSchedulesByIdClassroomRanges
 );
-router.get("/schedule/:cpf", scheduleController.getScheduleByCpf);
+router.get("/schedule/cpf/:cpf", scheduleController.getScheduleByCpf);
 router.delete("/schedule/:id", scheduleController.deleteSchedule);
 
 module.exports = router;

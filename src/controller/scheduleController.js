@@ -303,7 +303,7 @@ module.exports = class scheduleController {
         }
         return res
         .status(200)
-        .json({ message: "Agendamentos obtidos com sucesso para o usuário: ", cpf});
+        .json({ message: "Agendamentos obtidos com sucesso para o usuário: "+cpf, results });
       })
     } catch (error){
       console.error("Erro ao executar a consulta:", error);
