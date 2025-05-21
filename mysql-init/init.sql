@@ -1,10 +1,8 @@
-CREATE DATABASE  IF NOT EXISTS `agenda_sala_senai` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
-USE `agenda_sala_senai`;
--- MySQL dump 10.13  Distrib 8.0.40, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.36, for Win64 (x86_64)
 --
 -- Host: localhost    Database: agenda_sala_senai
 -- ------------------------------------------------------
--- Server version	8.0.40
+-- Server version	8.0.36
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -110,6 +108,71 @@ UNLOCK TABLES;
 --
 -- Dumping routines for database 'agenda_sala_senai'
 --
+/*!50003 DROP FUNCTION IF EXISTS `contar_reservas` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` FUNCTION `contar_reservas`(user_cpf CHAR(11)) RETURNS int
+    DETERMINISTIC
+BEGIN
+    DECLARE total INT;
+
+    SELECT COUNT(*) INTO total
+    FROM `schedule`
+    WHERE `user` COLLATE utf8mb4_unicode_ci = user_cpf COLLATE utf8mb4_unicode_ci;
+
+    RETURN total;
+
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `alterar_senha_usuario` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `alterar_senha_usuario`(
+    IN p_cpf CHAR(11),
+    IN p_senha_antiga VARCHAR(50),
+    IN p_senha_nova VARCHAR(50)
+)
+BEGIN
+    DECLARE senha_valida INT;
+
+    SELECT COUNT(*)
+    INTO senha_valida
+    FROM `user`
+    WHERE `cpf` COLLATE utf8mb4_unicode_ci = p_cpf COLLATE utf8mb4_unicode_ci
+    AND `password` COLLATE utf8mb4_unicode_ci = p_senha_antiga COLLATE utf8mb4_unicode_ci;
+
+    IF senha_valida > 0 THEN
+        UPDATE `user`
+        SET `password` = p_senha_nova
+        WHERE `cpf` COLLATE utf8mb4_unicode_ci = p_cpf COLLATE utf8mb4_unicode_ci;
+        SELECT 'Senha alterada com sucesso' AS status;
+    ELSE
+        SELECT 'Senha antiga incorreta' AS status;
+    END IF;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -120,4 +183,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-03-31  0:29:30
+-- Dump completed on 2025-05-21 16:14:27
