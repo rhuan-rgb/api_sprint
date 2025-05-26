@@ -16,7 +16,6 @@ module.exports = class scheduleController {
     const { dateStart, dateEnd, days, user, classroom, timeStart, timeEnd } =
       req.body;
 
-
     // Verificar se todos os campos estão preenchidos
     if (
       !dateStart ||
@@ -27,19 +26,19 @@ module.exports = class scheduleController {
       !timeStart ||
       !timeEnd
     ) {
-      return res.status(400).json({ error: "Todos os campos devem ser preenchidos" });
+      return res
+        .status(400)
+        .json({ error: "Todos os campos devem ser preenchidos" });
     }
     console.log(req.body);
 
-
     const diasValidos = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sab"];
 
-    const diasInvalidos = days.filter(day => !diasValidos.includes(day));
+    const diasInvalidos = days.filter((day) => !diasValidos.includes(day));
 
     if (diasInvalidos.length > 0) {
       return res.status(400).json({ error: "Dias inválidos no agendamento" });
     }
-
 
     // Verificar se o tempo está dentro do intervalo permitido
     const isWithinTimeRange = (time) => {
@@ -62,7 +61,7 @@ module.exports = class scheduleController {
       const [endHour, endMinute] = end.split(":").map(Number);
       const startTotal = startHour * 60 + startMinute;
       const endTotal = endHour * 60 + endMinute;
-      return (endTotal - startTotal) <= 120;
+      return endTotal - startTotal <= 120;
     };
 
     if (!isDurationAllowed(timeStart, timeEnd)) {
@@ -70,9 +69,6 @@ module.exports = class scheduleController {
         error: "A reserva não pode ultrapassar 2 horas de duração",
       });
     }
-
-
-
 
     // Converter o array days em uma string separada por vírgulas
     const daysString = days.map((day) => `${day}`).join(", ");
@@ -151,7 +147,7 @@ module.exports = class scheduleController {
   static async getSchedulesByIdClassroomRanges(req, res) {
     const classroomID = req.params.id;
     const { weekStart, weekEnd } = req.query; // Variavel para armazenar a semana selecionada
-    console.log(weekStart + ' ' + weekEnd)
+    console.log(weekStart + " " + weekEnd);
     // Consulta SQL para obter todos os agendamentos para uma determinada sala de aula
     const query = `
     SELECT schedule.*, user.name AS userName
@@ -160,8 +156,6 @@ module.exports = class scheduleController {
     WHERE classroom = '${classroomID}'
     AND (dateStart <= '${weekEnd}' AND dateEnd >= '${weekStart}')
 `;
-
-
 
     try {
       // Executa a consulta
@@ -267,12 +261,11 @@ module.exports = class scheduleController {
       WHERE classroom = '${classroomID}'
     `;
     const queryResult = await scheduleObjectTreatment(query);
-    if (typeof (queryResult) == "object") {
+    if (typeof queryResult == "object") {
       res.status(200).json({ queryResult });
     } else {
       res.status(500).json(queryResult);
     }
-
   }
 
   static async getAllSchedules(req, res) {
@@ -283,29 +276,31 @@ module.exports = class scheduleController {
       JOIN user ON schedule.user = user.cpf
     `;
     const queryResult = await scheduleObjectTreatment(query);
-    if (typeof (queryResult) == "object") {
+    if (typeof queryResult == "object") {
       res.status(200).json({ queryResult });
     } else {
       res.status(500).json(queryResult);
     }
-
   }
 
-  static async getScheduleByCpf(req, res){
+  static async getScheduleByCpf(req, res) {
     const cpf = req.params.cpf;
-    const query = `SELECT * FROM schedule WHERE user = ${cpf}`
+    const query = `SELECT * FROM schedule WHERE user = ${cpf}
+                  AND CONCAT(dateStart, ' ', timeStart) >= NOW()
+                  ORDER BY dateStart ASC, timeStart ASC;`;
 
     try {
-      connect.query(query, function (err, results){
+      connect.query(query, function (err, results) {
         if (err) {
           console.error(err);
           return res.status(500).json({ error: "Erro interno do servidor" });
         }
-        return res
-        .status(200)
-        .json({ message: "Agendamentos obtidos com sucesso para o usuário: "+cpf, results });
-      })
-    } catch (error){
+        return res.status(200).json({
+          message: "Agendamentos obtidos com sucesso para o usuário: " + cpf,
+          results,
+        });
+      });
+    } catch (error) {
       console.error("Erro ao executar a consulta:", error);
       return res.status(500).json({ error: "Erro interno do servidor" });
     }

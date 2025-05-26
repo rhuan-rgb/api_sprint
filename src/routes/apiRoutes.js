@@ -30,4 +30,6 @@ router.get(
 router.get("/schedule/cpf/:cpf", scheduleController.getScheduleByCpf);
 router.delete("/schedule/:id", scheduleController.deleteSchedule);
 
+
+
 module.exports = router;
