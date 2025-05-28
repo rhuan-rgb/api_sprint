@@ -153,6 +153,14 @@ module.exports = class userController {
         [cpf, email, password, name, userId],
         (err, results) => {
           if (err) {
+            if (err.code === "ER_DUP_ENTRY") {
+              console.log(err);
+              console.log(err.code);
+              return res
+                .status(400)
+                .json({ error: "CPF ou email já cadastrado" });
+            }
+            console.log("error do front: ", err);
             return res.status(500).json({ error: "Erro interno do servidor" });
           }
           if (results.affectedRows === 0) {
@@ -164,8 +172,8 @@ module.exports = class userController {
         }
       );
     } catch (error) {
-      res.status(500).json({ error: "Erro interno do servidor" });
-      return res.status(500).json({ error });
+      console.log("error do front: ", error);
+      return res.status(500).json({ error: "Erro interno do servidor" });
     }
   }
 

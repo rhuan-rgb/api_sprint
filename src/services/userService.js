@@ -1,4 +1,5 @@
 module.exports = function userService({ cpf, email, password, name }) {
+
   if (!cpf || !email || !password || !name) {
     return { error: "Todos os campos devem ser preenchidos" };
   }

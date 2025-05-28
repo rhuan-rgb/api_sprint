@@ -14,10 +14,10 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
 --
 -- Table structure for table `classroom`
 --
-
 
 DROP TABLE IF EXISTS `classroom`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -59,9 +59,9 @@ CREATE TABLE `schedule` (
   PRIMARY KEY (`id`),
   KEY `user` (`user`),
   KEY `classroom` (`classroom`),
-  CONSTRAINT `schedule_ibfk_1` FOREIGN KEY (`user`) REFERENCES `user` (`cpf`),
+  CONSTRAINT `schedule_ibfk_1` FOREIGN KEY (`user`) REFERENCES `user` (`cpf`) ON UPDATE CASCADE,
   CONSTRAINT `schedule_ibfk_2` FOREIGN KEY (`classroom`) REFERENCES `classroom` (`number`)
-) ENGINE=InnoDB AUTO_INCREMENT=49 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=54 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -70,7 +70,7 @@ CREATE TABLE `schedule` (
 
 LOCK TABLES `schedule` WRITE;
 /*!40000 ALTER TABLE `schedule` DISABLE KEYS */;
-INSERT INTO `schedule` VALUES (45,'2024-10-12','2024-10-15','Seg, Ter, Qua','12345680091','A1','16:00:00','18:00:00'),(47,'2024-10-12','2024-10-15','Seg, Ter, Qua','12345680091','A1','14:00:00','15:00:00');
+INSERT INTO `schedule` VALUES (45,'2024-10-12','2024-10-15','Seg, Ter, Qua','12345680091','A1','16:00:00','18:00:00'),(47,'2024-10-12','2024-10-15','Seg, Ter, Qua','12345680091','A1','14:00:00','15:00:00'),(51,'2025-05-28','2025-05-28','Seg','46067858888','A1','12:04:00','13:04:00'),(52,'2025-05-28','2025-05-28','Seg','46067858888','A2','14:04:00','15:04:00'),(53,'2025-05-28','2025-05-28','Seg','46067858888','A1','16:42:00','17:42:00');
 /*!40000 ALTER TABLE `schedule` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -97,7 +97,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES ('12345680091','1234','euler.ferreira19@gmail.com','Euller Silva'),('46067858886','1234','eu@eu','Euller Ferreira');
+INSERT INTO `user` VALUES ('12345680091','1234','euler.ferreira19@gmail.com','Euller Silva'),('46067858888','1234','eu@eu','Euller Ferreira');
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -183,4 +183,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-05-21 16:14:27
+-- Dump completed on 2025-05-28 13:09:15
