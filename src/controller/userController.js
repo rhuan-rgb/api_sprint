@@ -138,7 +138,9 @@ module.exports = class userController {
 
   static async updateUser(req, res) {
     const userId = req.params.id;
-    const { cpf, email, password, name } = req.body;
+    const { cpf, email, name } = req.body;
+
+    console.log("Estou no updateUser!!!")
 
     const validationError = userService(req.body);
     if (validationError) {
@@ -147,30 +149,26 @@ module.exports = class userController {
 
     try {
       const query =
-        "UPDATE user SET cpf = ?, email = ?, password = ?, name = ? WHERE cpf = ?";
-      connect.query(
-        query,
-        [cpf, email, password, name, userId],
-        (err, results) => {
-          if (err) {
-            if (err.code === "ER_DUP_ENTRY") {
-              console.log(err);
-              console.log(err.code);
-              return res
-                .status(400)
-                .json({ error: "CPF ou email já cadastrado" });
-            }
-            console.log("error do front: ", err);
-            return res.status(500).json({ error: "Erro interno do servidor" });
+        "UPDATE user SET cpf = ?, email = ?, name = ? WHERE cpf = ?";
+      connect.query(query, [cpf, email, name, userId], (err, results) => {
+        if (err) {
+          if (err.code === "ER_DUP_ENTRY") {
+            console.log(err);
+            console.log(err.code);
+            return res
+              .status(400)
+              .json({ error: "CPF ou email já cadastrado" });
           }
-          if (results.affectedRows === 0) {
-            return res.status(404).json({ error: "Usuário não encontrado" });
-          }
-          return res
-            .status(200)
-            .json({ message: "Usuário atualizado com sucesso" });
+          console.log("error do front: ", err);
+          return res.status(500).json({ error: "Erro interno do servidor" });
         }
-      );
+        if (results.affectedRows === 0) {
+          return res.status(404).json({ error: "Usuário não encontrado" });
+        }
+        return res
+          .status(200)
+          .json({ message: "Usuário atualizado com sucesso" });
+      });
     } catch (error) {
       console.log("error do front: ", error);
       return res.status(500).json({ error: "Erro interno do servidor" });
@@ -201,5 +199,24 @@ module.exports = class userController {
       console.error("Erro ao executar a consulta:", error);
       return res.status(500).json({ error: "Erro interno do servidor" });
     }
+  }
+
+  static async updatePassword(req, res) {
+    const { cpf, senha_atual, nova_senha } = req.body;
+
+    connect.query(
+      "call alterar_senha_usuario(?,?,?);",
+      [cpf, senha_atual, nova_senha],
+      (err, result) => {
+        console.log(err.code)
+        if (err) {
+          return res.status(500).json({ error: err.message });
+        }
+
+        return res.status(201).json({
+          message: "Senha atualizada com sucesso",
+        });
+      }
+    );
   }
 };
