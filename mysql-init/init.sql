@@ -18,6 +18,9 @@
 --
 -- Table structure for table `classroom`
 --
+CREATE database agenda_sala_senai;
+
+use agenda_sala_senai;
 
 DROP TABLE IF EXISTS `classroom`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;

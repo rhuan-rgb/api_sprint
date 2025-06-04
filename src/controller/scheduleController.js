@@ -285,12 +285,16 @@ module.exports = class scheduleController {
 
   static async getScheduleByCpf(req, res) {
     const cpf = req.params.cpf;
-    const query = `SELECT * FROM schedule WHERE user = ${cpf}
-                  AND CONCAT(dateStart, ' ', timeStart) >= NOW()
-                  ORDER BY dateStart ASC, timeStart ASC;`;
-
+    const query = `
+        SELECT 
+            s.*, 
+            contar_reservas(?) AS total_reservas
+        FROM schedule s
+        WHERE s.user = ?;
+    `;
+ 
     try {
-      connect.query(query, function (err, results) {
+      connect.query(query,[cpf, cpf], function (err, results) {
         if (err) {
           console.error(err);
           return res.status(500).json({ error: "Erro interno do servidor" });
