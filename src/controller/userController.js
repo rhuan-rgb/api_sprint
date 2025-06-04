@@ -208,8 +208,7 @@ module.exports = class userController {
       "call alterar_senha_usuario(?,?,?);",
       [cpf, senha_atual, nova_senha],
       (err, result) => {
-        console.log(err.code)
-        if (err) {
+        if (err) {  
           return res.status(500).json({ error: err.message });
         }
 
