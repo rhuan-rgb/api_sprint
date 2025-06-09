@@ -43,6 +43,38 @@ INSERT INTO `classroom` VALUES ('A1','CONVERSORES',16),('A2','ELETRÔNICA',16),(
 UNLOCK TABLES;
 
 --
+-- Table structure for table `log_schedule`
+--
+
+DROP TABLE IF EXISTS `log_schedule`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `log_schedule` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `id_agendamento` int DEFAULT NULL,
+  `cpf_usuario` char(11) DEFAULT NULL,
+  `sala` char(5) DEFAULT NULL,
+  `data_inicio` date DEFAULT NULL,
+  `data_fim` date DEFAULT NULL,
+  `dias` varchar(255) DEFAULT NULL,
+  `hora_inicio` time DEFAULT NULL,
+  `hora_fim` time DEFAULT NULL,
+  `data_log` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `log_schedule`
+--
+
+LOCK TABLES `log_schedule` WRITE;
+/*!40000 ALTER TABLE `log_schedule` DISABLE KEYS */;
+INSERT INTO `log_schedule` VALUES (1,62,'12345678900','A1','2025-06-09','2025-06-09','Seg','14:10:00','15:10:00','2025-06-09 16:12:42');
+/*!40000 ALTER TABLE `log_schedule` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `schedule`
 --
 
@@ -63,7 +95,7 @@ CREATE TABLE `schedule` (
   KEY `classroom` (`classroom`),
   CONSTRAINT `schedule_ibfk_1` FOREIGN KEY (`user`) REFERENCES `user` (`cpf`) ON UPDATE CASCADE,
   CONSTRAINT `schedule_ibfk_2` FOREIGN KEY (`classroom`) REFERENCES `classroom` (`number`)
-) ENGINE=InnoDB AUTO_INCREMENT=57 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=63 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -75,6 +107,42 @@ LOCK TABLES `schedule` WRITE;
 INSERT INTO `schedule` VALUES (51,'2025-05-28','2025-05-28','Seg','46067858888','A1','12:04:00','13:04:00'),(52,'2025-05-28','2025-05-28','Seg','46067858888','A2','14:04:00','15:04:00'),(53,'2025-05-28','2025-05-28','Seg','46067858888','A1','16:42:00','17:42:00');
 /*!40000 ALTER TABLE `schedule` ENABLE KEYS */;
 UNLOCK TABLES;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`alunods`@`%`*/ /*!50003 TRIGGER `after_insert_schedule` AFTER INSERT ON `schedule` FOR EACH ROW BEGIN
+    INSERT INTO log_schedule (
+        id_agendamento,
+        cpf_usuario,
+        sala,
+        data_inicio,
+        data_fim,
+        dias,
+        hora_inicio,
+        hora_fim
+    )
+    VALUES (
+        NEW.id,
+        NEW.user,
+        NEW.classroom,
+        NEW.dateStart,
+        NEW.dateEnd,
+        NEW.days,
+        NEW.timeStart,
+        NEW.timeEnd
+    );
+END */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
 -- Table structure for table `user`
@@ -179,4 +247,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-06-09 12:58:48
+-- Dump completed on 2025-06-09 13:14:35
