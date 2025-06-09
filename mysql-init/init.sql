@@ -1,5 +1,5 @@
-CREATE DATABASE  IF NOT EXISTS `agenda_sala_senai` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
-USE `agenda_sala_senai`;
+-- CREATE DATABASE  IF NOT EXISTS `agenda_sala_senai` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
+-- USE `agenda_sala_senai`;
 -- MySQL dump 10.13  Distrib 8.0.36, for Win64 (x86_64)
 --
 -- Host: localhost    Database: agenda_sala_senai
@@ -116,7 +116,7 @@ UNLOCK TABLES;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`alunods`@`%`*/ /*!50003 TRIGGER `after_insert_schedule` AFTER INSERT ON `schedule` FOR EACH ROW BEGIN
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `after_insert_schedule` AFTER INSERT ON `schedule` FOR EACH ROW BEGIN
     INSERT INTO log_schedule (
         id_agendamento,
         cpf_usuario,
@@ -215,7 +215,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`alunods`@`%` PROCEDURE `deletar_agendamento`(IN p_id INT)
+CREATE DEFINER=`root`@`localhost` PROCEDURE `deletar_agendamento`(IN p_id INT)
 BEGIN
     DECLARE existe INT;
 
