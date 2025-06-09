@@ -153,7 +153,7 @@ DROP TABLE IF EXISTS `user`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `user` (
   `cpf` char(11) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `password` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `email` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`cpf`),
@@ -167,7 +167,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES ('12345678900','123','a@a','a'),('12345680091','1234','euler.ferreira19@gmail.com','Euller Silva'),('46067858888','1234','eu@eu','Euller Ferreira');
+INSERT INTO `user` VALUES ('12345678900','1','a@a','a'),('12345678901','$2b$10$NrB9IQPABg76IEm88sp2I.3BPEqFA8T6wwVXPw0dS/aDl3mpNFmcq','a@b','a'),('12345680091','1234','euler.ferreira19@gmail.com','Euller Silva'),('46067858888','1234','eu@eu','Euller Ferreira');
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -247,4 +247,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-06-09 13:14:35
+-- Dump completed on 2025-06-09 15:23:13
