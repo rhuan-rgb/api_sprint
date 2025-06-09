@@ -2,6 +2,8 @@ const connect = require("../db/connect");
 const userService = require("../services/userService");
 const cpfService = require("../services/cpfService");
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt"); // <-- importe aqui
+const SALT_ROUNDS = 10; // Número de rounds para gerar o hash
 
 module.exports = class userController {
   static async createUser(req, res) {
@@ -18,14 +20,12 @@ module.exports = class userController {
         return res.status(400).json(cpfError);
       }
 
-      const query = `INSERT INTO user (cpf, password, email, name) VALUES ( 
-          '${cpf}', 
-          '${password}', 
-          '${email}', 
-          '${name}'
-        )`;
+      // Criptografar a senha antes de salvar
+      const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
 
-      connect.query(query, [cpf, password, email, name], (err) => {
+      const query = `INSERT INTO user (cpf, password, email, name) VALUES (?, ?, ?, ?)`;
+
+      connect.query(query, [cpf, hashedPassword, email, name], (err) => {
         if (err) {
           if (err.code === "ER_DUP_ENTRY") {
             console.log(err);
@@ -53,7 +53,7 @@ module.exports = class userController {
       return res.status(400).json({ error: "CPF e senha são obrigatórios" });
     }
 
-    const query = `SELECT * FROM user WHERE cpf = '${cpf}' AND password = '${password}'`;
+    const query = `SELECT * FROM user WHERE cpf = '${cpf}'`;
 
     try {
       connect.query(query, function (err, results) {
@@ -68,7 +68,10 @@ module.exports = class userController {
 
         const user = results[0];
 
-        if (user.password !== password) {
+        // Comparar a senha digitada com o hash do banco
+        const senhaCorreta = bcrypt.compareSync(password, user.password);
+
+        if (!senhaCorreta) {
           return res.status(401).json({ error: "Senha incorreta" });
         }
 
@@ -140,7 +143,7 @@ module.exports = class userController {
     const userId = req.params.id;
     const { cpf, email, name } = req.body;
 
-    console.log("Estou no updateUser!!!")
+    console.log("Estou no updateUser!!!");
 
     const validationError = userService(req.body);
     if (validationError) {
@@ -201,21 +204,21 @@ module.exports = class userController {
     }
   }
 
-  static async updatePassword(req, res) {
-    const { cpf, senha_atual, nova_senha } = req.body;
+  // static async updatePassword(req, res) {
+  //   const { cpf, senha_atual, nova_senha } = req.body;
 
-    connect.query(
-      "call alterar_senha_usuario(?,?,?);",
-      [cpf, senha_atual, nova_senha],
-      (err, result) => {
-        if (err) {  
-          return res.status(500).json({ error: err.message });
-        }
+  //   connect.query(
+  //     "call alterar_senha_usuario(?,?,?);",
+  //     [cpf, senha_atual, nova_senha],
+  //     (err, result) => {
+  //       if (err) {
+  //         return res.status(500).json({ error: err.message });
+  //       }
 
-        return res.status(201).json({
-          message: "Senha atualizada com sucesso",
-        });
-      }
-    );
-  }
+  //       return res.status(201).json({
+  //         message: "Senha atualizada com sucesso",
+  //       });
+  //     }
+  //   );
+  // }
 };
