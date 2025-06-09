@@ -292,9 +292,9 @@ module.exports = class scheduleController {
         FROM schedule s
         WHERE s.user = ?;
     `;
- 
+
     try {
-      connect.query(query,[cpf, cpf], function (err, results) {
+      connect.query(query, [cpf, cpf], function (err, results) {
         if (err) {
           console.error(err);
           return res.status(500).json({ error: "Erro interno do servidor" });
@@ -312,27 +312,18 @@ module.exports = class scheduleController {
 
   static async deleteSchedule(req, res) {
     const scheduleId = req.params.id;
-    const query = `DELETE FROM schedule WHERE id = ?`;
-    const values = [scheduleId];
-
-    try {
-      connect.query(query, values, function (err, results) {
+    connect.query(
+      "call deletar_agendamento(?);",
+      [scheduleId],
+      (err, result) => {
         if (err) {
-          console.error(err);
-          return res.status(500).json({ error: "Erro interno do servidor" });
+          return res.status(500).json({ error: err.message });
         }
 
-        if (results.affectedRows === 0) {
-          return res.status(404).json({ error: "Agendamento não encontrado" });
-        }
-
-        return res
-          .status(200)
-          .json({ message: "Agendamento excluído com ID: " + scheduleId });
-      });
-    } catch (error) {
-      console.error("Erro ao executar a consulta:", error);
-      return res.status(500).json({ error: "Erro interno do servidor" });
-    }
+        return res.status(201).json({
+          message: "Reserva deletada com sucesso!",
+        });
+      }
+    );
   }
 };

@@ -1,3 +1,5 @@
+CREATE DATABASE  IF NOT EXISTS `agenda_sala_senai` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
+USE `agenda_sala_senai`;
 -- MySQL dump 10.13  Distrib 8.0.36, for Win64 (x86_64)
 --
 -- Host: localhost    Database: agenda_sala_senai
@@ -18,9 +20,6 @@
 --
 -- Table structure for table `classroom`
 --
-CREATE database agenda_sala_senai;
-
-use agenda_sala_senai;
 
 DROP TABLE IF EXISTS `classroom`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -64,7 +63,7 @@ CREATE TABLE `schedule` (
   KEY `classroom` (`classroom`),
   CONSTRAINT `schedule_ibfk_1` FOREIGN KEY (`user`) REFERENCES `user` (`cpf`) ON UPDATE CASCADE,
   CONSTRAINT `schedule_ibfk_2` FOREIGN KEY (`classroom`) REFERENCES `classroom` (`number`)
-) ENGINE=InnoDB AUTO_INCREMENT=54 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=57 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -73,7 +72,7 @@ CREATE TABLE `schedule` (
 
 LOCK TABLES `schedule` WRITE;
 /*!40000 ALTER TABLE `schedule` DISABLE KEYS */;
-INSERT INTO `schedule` VALUES (45,'2024-10-12','2024-10-15','Seg, Ter, Qua','12345680091','A1','16:00:00','18:00:00'),(47,'2024-10-12','2024-10-15','Seg, Ter, Qua','12345680091','A1','14:00:00','15:00:00'),(51,'2025-05-28','2025-05-28','Seg','46067858888','A1','12:04:00','13:04:00'),(52,'2025-05-28','2025-05-28','Seg','46067858888','A2','14:04:00','15:04:00'),(53,'2025-05-28','2025-05-28','Seg','46067858888','A1','16:42:00','17:42:00');
+INSERT INTO `schedule` VALUES (51,'2025-05-28','2025-05-28','Seg','46067858888','A1','12:04:00','13:04:00'),(52,'2025-05-28','2025-05-28','Seg','46067858888','A2','14:04:00','15:04:00'),(53,'2025-05-28','2025-05-28','Seg','46067858888','A1','16:42:00','17:42:00');
 /*!40000 ALTER TABLE `schedule` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -100,7 +99,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES ('12345680091','1234','euler.ferreira19@gmail.com','Euller Silva'),('46067858888','1234','eu@eu','Euller Ferreira');
+INSERT INTO `user` VALUES ('12345678900','123','a@a','a'),('12345680091','1234','euler.ferreira19@gmail.com','Euller Silva'),('46067858888','1234','eu@eu','Euller Ferreira');
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -138,7 +137,7 @@ DELIMITER ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 DROP PROCEDURE IF EXISTS `alterar_senha_usuario` */;
+/*!50003 DROP PROCEDURE IF EXISTS `deletar_agendamento` */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
@@ -148,27 +147,21 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `alterar_senha_usuario`(
-    IN p_cpf CHAR(11),
-    IN p_senha_antiga VARCHAR(50),
-    IN p_senha_nova VARCHAR(50)
-)
+CREATE DEFINER=`alunods`@`%` PROCEDURE `deletar_agendamento`(IN p_id INT)
 BEGIN
-    DECLARE senha_valida INT;
+    DECLARE existe INT;
 
-    SELECT COUNT(*)
-    INTO senha_valida
-    FROM `user`
-    WHERE `cpf` COLLATE utf8mb4_unicode_ci = p_cpf COLLATE utf8mb4_unicode_ci
-    AND `password` COLLATE utf8mb4_unicode_ci = p_senha_antiga COLLATE utf8mb4_unicode_ci;
+    -- Verifica se o agendamento existe
+    SELECT COUNT(*) INTO existe
+    FROM schedule
+    WHERE id = p_id;
 
-    IF senha_valida > 0 THEN
-        UPDATE `user`
-        SET `password` = p_senha_nova
-        WHERE `cpf` COLLATE utf8mb4_unicode_ci = p_cpf COLLATE utf8mb4_unicode_ci;
-        SELECT 'Senha alterada com sucesso' AS status;
+    IF existe > 0 THEN
+        DELETE FROM schedule WHERE id = p_id;
+        SELECT CONCAT('Agendamento com ID ', p_id, ' foi deletado.') AS status;
     ELSE
-        SELECT 'Senha antiga incorreta' AS status;
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Agendamento não encontrado.';
     END IF;
 END ;;
 DELIMITER ;
@@ -186,4 +179,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-05-28 13:09:15
+-- Dump completed on 2025-06-09 12:58:48
