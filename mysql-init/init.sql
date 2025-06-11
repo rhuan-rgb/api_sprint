@@ -1,5 +1,3 @@
--- CREATE DATABASE  IF NOT EXISTS `agenda_sala_senai` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
--- USE `agenda_sala_senai`;
 -- MySQL dump 10.13  Distrib 8.0.36, for Win64 (x86_64)
 --
 -- Host: localhost    Database: agenda_sala_senai
@@ -61,7 +59,7 @@ CREATE TABLE `log_schedule` (
   `hora_fim` time DEFAULT NULL,
   `data_log` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -70,7 +68,7 @@ CREATE TABLE `log_schedule` (
 
 LOCK TABLES `log_schedule` WRITE;
 /*!40000 ALTER TABLE `log_schedule` DISABLE KEYS */;
-INSERT INTO `log_schedule` VALUES (1,62,'12345678900','A1','2025-06-09','2025-06-09','Seg','14:10:00','15:10:00','2025-06-09 16:12:42');
+INSERT INTO `log_schedule` VALUES (1,62,'12345678900','A1','2025-06-09','2025-06-09','Seg','14:10:00','15:10:00','2025-06-09 16:12:42'),(2,63,'12345678911','A1','2026-10-10','2026-10-17','Sab','07:30:00','09:30:00','2025-06-11 12:20:09'),(3,64,'12345678911','A1','2026-10-24','2026-10-24','Sab','07:30:00','09:30:00','2025-06-11 12:25:35'),(4,65,'12345678911','A1','2026-10-24','2026-10-24','Sab','07:30:00','09:30:00','2025-06-11 12:28:24'),(5,66,'12345678911','A1','2026-10-24','2026-10-24','Sab','07:30:00','09:30:00','2025-06-11 13:10:54');
 /*!40000 ALTER TABLE `log_schedule` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -93,9 +91,9 @@ CREATE TABLE `schedule` (
   PRIMARY KEY (`id`),
   KEY `user` (`user`),
   KEY `classroom` (`classroom`),
-  CONSTRAINT `schedule_ibfk_1` FOREIGN KEY (`user`) REFERENCES `user` (`cpf`) ON UPDATE CASCADE,
+  CONSTRAINT `schedule_ibfk_1` FOREIGN KEY (`user`) REFERENCES `user` (`cpf`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `schedule_ibfk_2` FOREIGN KEY (`classroom`) REFERENCES `classroom` (`number`)
-) ENGINE=InnoDB AUTO_INCREMENT=63 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=67 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -167,7 +165,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES ('12345678900','1','a@a','a'),('12345678901','$2b$10$NrB9IQPABg76IEm88sp2I.3BPEqFA8T6wwVXPw0dS/aDl3mpNFmcq','a@b','a'),('12345680091','1234','euler.ferreira19@gmail.com','Euller Silva'),('46067858888','1234','eu@eu','Euller Ferreira');
+INSERT INTO `user` VALUES ('12345678900','1','a@a','a'),('12345678913','$2b$10$U7T1zHlV97dQyuK3ULAgJOXZLvkYI/ofeXOYyvIHfr.c.cxX1Sis6','@1','a'),('12345678915','$2b$10$WLYHb7NIye5bJ9eGx.uhQOxnxcIRjZwiXs3PXIQ2PZyX8WqPsX.Ii','@s','as'),('12345678919','$2b$10$Abxp26Mf.BFtKBfQjTlFquScOiYBj6RYkRA4BMhwCbVS60vl3Rg7m','@jao','jao'),('12345678920','$2b$10$XkHtN/uf1e8gjCHPg9UoZeZNAuKaUqm1WK2dD6YunFvAGjT/az8WW','@teste','teste'),('12345678921','$2b$10$at5wJAP1nVlrSP3PgYJsU.R35Chw9zjNTVfNGfZXE/ZnHnr3HLyuK','@teste1','teste1'),('12345678922','$2b$10$V0mJLTOyzeOU1YI2c/THYOCHlF5ZQ9GZ/AY5KduZ5DpI.8ZJZAdoe','@x','ax'),('12345678999','$2b$10$o4nkUHlmYZYk3RMIQsPDmeXCLca5DES6ptNogCq/FiZEVTmtEtbGW','@ß;íbíðí','ax'),('12345680091','1234','euler.ferreira19@gmail.com','Euller Silva'),('46067858888','1234','eu@eu','Euller Ferreira');
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -247,4 +245,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-06-09 15:23:13
+-- Dump completed on 2025-06-11 12:56:44
