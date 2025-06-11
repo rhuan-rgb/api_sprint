@@ -9,11 +9,10 @@ router.post("/user/", userController.createUser);
 router.post("/user/login", userController.postLogin);
 router.get("/user/", verifyJWT, userController.getAllUsers);
 router.get("/user/:id",  verifyJWT, userController.getUserById);
-// router.put("/user/novasenha",  verifyJWT,userController.updatePassword);
+router.put("/user/newpassword",  verifyJWT,userController.updatePassword);
 router.put("/user/:id",  verifyJWT, userController.updateUser);
 router.delete("/user/:id",  verifyJWT,userController.deleteUser);
 
-// router.put("/senha", atualizaSenha.updatePassword);
 
 //Classroom
 router.post("/classroom/",  verifyJWT,classroomController.createClassroom);

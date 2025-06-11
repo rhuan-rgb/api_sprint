@@ -204,6 +204,57 @@ module.exports = class userController {
     }
   }
 
+  static async updatePassword(req, res) {
+    const { cpf, senha_atual, nova_senha } = req.body;
+  
+    if (!cpf || !senha_atual || !nova_senha) {
+      return res.status(400).json({ error: "Todos os campos devem ser preenchidos" });
+    }
+  
+    try {
+      const querySelect = "SELECT password FROM user WHERE cpf = ?";
+      connect.query(querySelect, [cpf], async (err, results) => {
+        if (err) {
+          console.error(err);
+          return res.status(500).json({ error: "Erro ao buscar usuário" });
+        }
+  
+        if (results.length === 0) {
+          return res.status(404).json({ error: "Usuário não encontrado" });
+        }
+  
+        const senhaHashAtual = results[0].password;
+  
+        // Verifica se a senha atual está correta
+        const senhaCorreta = await bcrypt.compare(senha_atual, senhaHashAtual);
+        if (!senhaCorreta) {
+          return res.status(401).json({ error: "Senha atual incorreta" });
+        }
+  
+        // Gera hash da nova senha
+        const novaSenhaHash = await bcrypt.hash(nova_senha, SALT_ROUNDS);
+  
+        // Atualiza a senha no banco
+        const queryUpdate = "UPDATE user SET password = ? WHERE cpf = ?";
+        connect.query(queryUpdate, [novaSenhaHash, cpf], (err, result) => {
+          if (err) {
+            console.error(err);
+            return res.status(500).json({ error: "Erro ao atualizar a senha" });
+          }
+  
+          return res.status(200).json({ message: "Senha atualizada com sucesso" });
+        });
+      });
+    } catch (error) {
+      console.error("Erro ao atualizar a senha:", error);
+      return res.status(500).json({ error: "Erro interno do servidor" });
+    }
+  }
+  
+
+
+
+
   // static async updatePassword(req, res) {
   //   const { cpf, senha_atual, nova_senha } = req.body;
 
